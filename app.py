@@ -76,8 +76,8 @@ if dark:
     BG          = "#080808"
     SURFACE     = "#111111"
     SURFACE_2   = "#171717"
-    INPUT       = "#0f0f0f"
-    TEXT        = "#f5f5f5"
+    INPUT       = "#ffffff"
+    TEXT        = "#111111"
     MUTED       = "#9a9a9a"
     BORDER      = "#292929"
     BORDER_SOFT = "#333333"
@@ -231,19 +231,34 @@ st.markdown(
     }}
 
     /* ---------- Final form-control normalization ---------- */
+    /* Every form control uses the same white surface. */
     div[data-baseweb="select"] > div,
-    div[data-testid="stNumberInput"] > div {{
-        color: {TEXT} !important;
-        background: {INPUT} !important;
+    div[data-testid="stNumberInput"] > div,
+    div[data-testid="stNumberInput"] input,
+    div[data-baseweb="select"] input {{
+        background: #ffffff !important;
+        color: #111111 !important;
         border-color: {BORDER} !important;
     }}
 
+    div[data-baseweb="select"] > div:hover,
+    div[data-baseweb="select"] > div:focus,
+    div[data-baseweb="select"] > div:focus-within,
     div[data-baseweb="select"] > div[aria-invalid="true"],
     div[data-baseweb="select"] > div[aria-expanded="true"],
     div[data-testid="stNumberInput"] > div:focus-within {{
         border-color: {PRIMARY} !important;
         outline: none !important;
         box-shadow: 0 0 0 2px {GLOW} !important;
+    }}
+
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] input {{
+        color: #111111 !important;
+    }}
+
+    div[data-baseweb="select"] svg {{
+        fill: {MUTED} !important;
     }}
 
     div[data-testid="stNumberInput"] input:focus {{
