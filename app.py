@@ -67,6 +67,11 @@ def load_model():
 model = load_model()
 
 # ---------- Theme tokens ----------
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = True
+
+dark = st.session_state.dark_mode
+
 if dark:
     BG          = "#0a0e1a"
     SURFACE     = "#111827"
