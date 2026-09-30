@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 
 st.set_page_config(
     page_title="CardioPredict",
@@ -11,7 +11,8 @@ st.set_page_config(
 
 @st.cache_resource
 def load_model():
-    return joblib.load("heart_disease_model.pkl")
+    with open("heart_disease_model.pkl", "rb") as f:
+        return pickle.load(f)
 
 model = load_model()
 
