@@ -73,18 +73,18 @@ if "dark_mode" not in st.session_state:
 dark = st.session_state.dark_mode
 
 if dark:
-    BG          = "#0a0e1a"
-    SURFACE     = "#111827"
-    SURFACE_2   = "#1a2332"
-    INPUT       = "#0f1828"
-    TEXT        = "#f1f5f9"
-    MUTED       = "#94a3b8"
-    BORDER      = "#1e293b"
-    BORDER_SOFT = "#243247"
+    BG          = "#080808"
+    SURFACE     = "#111111"
+    SURFACE_2   = "#171717"
+    INPUT       = "#0f0f0f"
+    TEXT        = "#f5f5f5"
+    MUTED       = "#9a9a9a"
+    BORDER      = "#292929"
+    BORDER_SOFT = "#333333"
     PRIMARY     = "#3b82f6"
     PRIMARY_HOV = "#2563eb"
     ACCENT      = "#60a5fa"
-    GLOW        = "rgba(59,130,246,0.15)"
+    GLOW        = "rgba(59,130,246,0.14)"
 else:
     BG          = "#f6f8fc"
     SURFACE     = "#ffffff"
