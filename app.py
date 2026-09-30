@@ -16,6 +16,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+
 @st.cache_resource
 def load_model():
     df = pd.read_csv("heart_disease_uci.csv")
@@ -39,12 +40,10 @@ def load_model():
         ("imputer", SimpleImputer(strategy="median")),
         ("scaler", StandardScaler()),
     ])
-
     categorical_transformer = Pipeline([
         ("imputer", SimpleImputer(strategy="most_frequent")),
         ("onehot", OneHotEncoder(handle_unknown="ignore")),
     ])
-
     preprocessor = ColumnTransformer([
         ("num", numerical_transformer, numerical_features),
         ("cat", categorical_transformer, categorical_features),
@@ -60,210 +59,156 @@ def load_model():
             random_state=42,
         )),
     ])
-
     model.fit(X_train, y_train)
     return model
+
 
 model = load_model()
 
 # ---------- Theme tokens ----------
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = True
-
 dark = st.session_state.dark_mode
 
-if dark:
-    BG          = "#080808"
-    SURFACE     = "#111111"
-    SURFACE_2   = "#171717"
-    INPUT       = "#ffffff"
-    TEXT        = "#111111"
-    MUTED       = "#9a9a9a"
-    BORDER      = "#292929"
-    BORDER_SOFT = "#333333"
-    PRIMARY     = "#3b82f6"
-    PRIMARY_HOV = "#2563eb"
-    ACCENT      = "#60a5fa"
-    GLOW        = "rgba(59,130,246,0.14)"
-else:
-    BG          = "#f6f8fc"
-    SURFACE     = "#ffffff"
-    SURFACE_2   = "#f8fafc"
-    INPUT       = "#ffffff"
-    TEXT        = "#0f172a"
-    MUTED       = "#64748b"
-    BORDER      = "#e2e8f0"
-    BORDER_SOFT = "#eef2f7"
-    PRIMARY     = "#2563eb"
-    PRIMARY_HOV = "#1d4ed8"
-    ACCENT      = "#3b82f6"
-    GLOW        = "rgba(37,99,235,0.10)"
+if dark:  # black + blue
+    BG        = "#04070f"
+    SURFACE   = "#0a1020"
+    INPUT     = "#101a30"   # one fill for every field
+    TEXT      = "#e8eefc"
+    MUTED     = "#8592b3"
+    BORDER    = "#1e2b4a"   # one border for every field and card
+    HOVER     = "#2a3b66"
+    PRIMARY   = "#3b82f6"
+    PRIMARY_D = "#2563eb"
+    ACCENT    = "#7db3ff"
+    GLOW      = "rgba(59,130,246,0.18)"
+    SHADOW    = "0 10px 30px -18px rgba(0,0,0,0.9)"
+else:  # white + blue
+    BG        = "#f3f7fe"
+    SURFACE   = "#ffffff"
+    INPUT     = "#ffffff"
+    TEXT      = "#0b1b3a"
+    MUTED     = "#5d6f94"
+    BORDER    = "#d3ddf0"
+    HOVER     = "#a9bce0"
+    PRIMARY   = "#2563eb"
+    PRIMARY_D = "#1d4ed8"
+    ACCENT    = "#2563eb"
+    GLOW      = "rgba(37,99,235,0.14)"
+    SHADOW    = "0 10px 30px -20px rgba(37,99,235,0.35)"
 
 st.markdown(
     f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
-    html, body, [class*="css"] {{
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    html, body, [class*="css"], .stApp {{
+        font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
         -webkit-font-smoothing: antialiased;
     }}
-
     .stApp {{
         background:
-            radial-gradient(1200px 600px at 10% -10%, {GLOW}, transparent 60%),
-            radial-gradient(900px 500px at 100% 0%, {GLOW}, transparent 55%),
+            radial-gradient(900px 480px at 8% -8%, {GLOW}, transparent 60%),
+            radial-gradient(700px 420px at 100% 0%, {GLOW}, transparent 60%),
             {BG};
+        color: {TEXT};
     }}
-
-    .block-container {{
-        max-width: 1180px;
-        padding-top: 2.2rem;
-        padding-bottom: 4rem;
-    }}
-
+    .block-container {{ max-width: 1120px; padding-top: 2rem; padding-bottom: 4rem; }}
     header, footer, #MainMenu {{ visibility: hidden; }}
 
-    h1, h2, h3, h4, h5, h6 {{
-        color: {TEXT} !important;
-        letter-spacing: -0.02em;
-        font-weight: 700;
+    h1, h2, h3, h4, h5, h6 {{ color: {TEXT} !important; letter-spacing: -0.02em; font-weight: 700; }}
+    p, label, span, li {{ color: {TEXT}; }}
+    [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] * {{
+        color: {MUTED} !important; font-size: 0.86rem;
     }}
-    p, label, span {{ color: {TEXT}; }}
-
-    [data-testid="stCaptionContainer"] {{
-        color: {MUTED} !important;
-        font-size: 0.86rem;
+    [data-testid="stWidgetLabel"] p {{
+        color: {TEXT} !important; font-weight: 600; font-size: 0.88rem;
     }}
 
     /* ---------- Cards ---------- */
     [data-testid="stVerticalBlockBorderWrapper"] {{
         background: {SURFACE} !important;
         border: 1px solid {BORDER} !important;
-        border-radius: 18px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -16px rgba(0,0,0,0.15);
-        transition: border-color 0.2s ease;
-    }}
-    [data-testid="stVerticalBlockBorderWrapper"]:hover {{
-        border-color: {BORDER_SOFT} !important;
+        border-radius: 16px !important;
+        box-shadow: {SHADOW};
     }}
 
-    /* ---------- Inputs ---------- */
-    /* Keep selects and number inputs visually identical */
+    /* ==========================================================
+       FORM CONTROLS: number inputs and dropdowns share ONE style
+       ========================================================== */
     div[data-baseweb="select"] > div,
-    div[data-testid="stNumberInput"] > div {{
+    div[data-baseweb="input"] {{
         background: {INPUT} !important;
         border: 1px solid {BORDER} !important;
         border-radius: 10px !important;
-        min-height: 40px !important;
+        min-height: 44px !important;
         box-shadow: none !important;
+        transition: border-color .15s ease, box-shadow .15s ease;
     }}
-
-    div[data-baseweb="select"] > div {{
-        background: {INPUT} !important;
-        border: 1px solid {BORDER} !important;
-        border-radius: 10px !important;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    div[data-baseweb="select"] > div:hover,
+    div[data-baseweb="input"]:hover {{
+        border-color: {HOVER} !important;
     }}
-    div[data-baseweb="select"] > div:hover {{
-        border-color: {ACCENT} !important;
-    }}
-    div[data-baseweb="select"] > div:focus,
     div[data-baseweb="select"] > div:focus-within,
-    div[data-baseweb="select"] > div[aria-invalid="true"],
-    div[data-baseweb="select"] > div[aria-expanded="true"] {{
-        border-color: {PRIMARY} !important;
-        outline: none !important;
-        box-shadow: 0 0 0 2px {GLOW} !important;
-    }}
-    div[data-baseweb="select"] > div:focus-within {{
+    div[data-baseweb="select"] > div[aria-expanded="true"],
+    div[data-baseweb="input"]:focus-within {{
         border-color: {PRIMARY} !important;
         box-shadow: 0 0 0 3px {GLOW} !important;
     }}
-    div[data-baseweb="select"] > div[aria-expanded="true"] {{
-        border-color: {PRIMARY} !important;
-        box-shadow: 0 0 0 2px {GLOW} !important;
+
+    /* inner wrappers/inputs: transparent so the outer box is the only surface */
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="base-input"],
+    div[data-baseweb="input"] input,
+    div[data-baseweb="select"] input {{
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
     }}
-    div[data-baseweb="select"] [data-baseweb="popover"] {{
-        border-color: {BORDER} !important;
-    }}
-    div[data-baseweb="menu"] {{
-        background: {SURFACE} !important;
-        border: 1px solid {BORDER} !important;
-    }}
-    div[data-baseweb="menu"] li {{
+    div[data-baseweb="input"] input,
+    div[data-baseweb="select"] input,
+    div[data-baseweb="select"] div,
+    div[data-baseweb="select"] span {{
         color: {TEXT} !important;
-        background: {SURFACE} !important;
+        -webkit-text-fill-color: {TEXT} !important;
+        font-size: 0.95rem !important;
+        font-weight: 500;
     }}
-    div[data-baseweb="menu"] li:hover,
-    div[data-baseweb="menu"] li[aria-selected="true"] {{
-        background: {SURFACE_2} !important;
-        color: {ACCENT} !important;
-    }}
-    div[data-baseweb="select"] span {{ color: {TEXT} !important; }}
     div[data-baseweb="select"] svg {{ fill: {MUTED} !important; }}
 
-    div[data-testid="stNumberInput"] {{
-        margin-top: 0 !important;
-    }}
-    div[data-testid="stNumberInput"] input {{
-        background: {INPUT} !important;
-        color: {TEXT} !important;
-        border: 0 !important;
-        border-radius: 10px 0 0 10px !important;
-        height: 38px !important;
-        box-shadow: none !important;
-    }}
-    div[data-testid="stNumberInput"] > div:focus-within {{
-        border-color: {PRIMARY} !important;
-        box-shadow: 0 0 0 3px {GLOW} !important;
-    }}
-    div[data-testid="stNumberInput"] button {{
-        background: {INPUT} !important;
+    /* number-input +/- buttons match the field */
+    [data-testid="stNumberInputStepUp"],
+    [data-testid="stNumberInputStepDown"] {{
+        background: transparent !important;
         color: {MUTED} !important;
         border: 0 !important;
         border-left: 1px solid {BORDER} !important;
-        min-height: 38px !important;
+        border-radius: 0 !important;
     }}
-    div[data-testid="stNumberInput"] button:hover {{
-        background: {SURFACE_2} !important;
+    [data-testid="stNumberInputStepUp"]:hover,
+    [data-testid="stNumberInputStepDown"]:hover {{
+        background: {GLOW} !important;
         color: {PRIMARY} !important;
     }}
+    [data-testid="stNumberInputStepUp"] svg,
+    [data-testid="stNumberInputStepDown"] svg {{ fill: currentColor !important; }}
 
-    /* ---------- Final form-control normalization ---------- */
-    /* Every form control uses the same white surface. */
-    div[data-baseweb="select"] > div,
-    div[data-testid="stNumberInput"] > div,
-    div[data-testid="stNumberInput"] input,
-    div[data-baseweb="select"] input {{
-        background: #ffffff !important;
-        color: #111111 !important;
-        border-color: {BORDER} !important;
+    /* dropdown menu (rendered in a portal) */
+    div[data-baseweb="popover"] > div,
+    ul[role="listbox"] {{
+        background: {SURFACE} !important;
+        border: 1px solid {BORDER} !important;
+        border-radius: 10px !important;
     }}
-
-    div[data-baseweb="select"] > div:hover,
-    div[data-baseweb="select"] > div:focus,
-    div[data-baseweb="select"] > div:focus-within,
-    div[data-baseweb="select"] > div[aria-invalid="true"],
-    div[data-baseweb="select"] > div[aria-expanded="true"],
-    div[data-testid="stNumberInput"] > div:focus-within {{
-        border-color: {PRIMARY} !important;
-        outline: none !important;
-        box-shadow: 0 0 0 2px {GLOW} !important;
+    ul[role="listbox"] li {{
+        background: transparent !important;
+        color: {TEXT} !important;
     }}
-
-    div[data-baseweb="select"] span,
-    div[data-baseweb="select"] input {{
-        color: #111111 !important;
-    }}
-
-    div[data-baseweb="select"] svg {{
-        fill: {MUTED} !important;
-    }}
-
-    div[data-testid="stNumberInput"] input:focus {{
-        outline: none !important;
-        box-shadow: none !important;
+    ul[role="listbox"] li:hover,
+    ul[role="listbox"] li[aria-selected="true"] {{
+        background: {GLOW} !important;
+        color: {ACCENT} !important;
     }}
 
     /* ---------- Buttons ---------- */
@@ -271,165 +216,67 @@ st.markdown(
         border-radius: 12px !important;
         min-height: 3rem !important;
         font-weight: 600 !important;
-        font-size: 0.95rem !important;
         border: 1px solid {BORDER} !important;
-        background: {SURFACE_2} !important;
+        background: {SURFACE} !important;
         color: {TEXT} !important;
-        transition: all 0.18s ease !important;
+        transition: border-color .15s ease, background .15s ease;
     }}
     .stButton > button:hover {{
-        border-color: {ACCENT} !important;
+        border-color: {PRIMARY} !important;
         color: {PRIMARY} !important;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px -8px {GLOW};
     }}
     .stButton > button[kind="primary"] {{
-        background: linear-gradient(135deg, {PRIMARY}, {PRIMARY_HOV}) !important;
-        color: white !important;
-        border: none !important;
-        box-shadow: 0 8px 24px -10px {PRIMARY};
+        background: linear-gradient(135deg, {PRIMARY}, {PRIMARY_D}) !important;
+        color: #ffffff !important;
+        border: 0 !important;
+        box-shadow: 0 10px 24px -12px {PRIMARY};
     }}
-    .stButton > button[kind="primary"]:hover {{
-        background: linear-gradient(135deg, {PRIMARY_HOV}, {PRIMARY}) !important;
-        box-shadow: 0 12px 28px -10px {PRIMARY};
-        transform: translateY(-1px);
-    }}
+    .stButton > button[kind="primary"] p {{ color: #ffffff !important; }}
+    .stButton > button[kind="primary"]:hover {{ filter: brightness(1.08); color: #ffffff !important; }}
 
-    /* ---------- Metrics ---------- */
+    /* ---------- Metric + progress ---------- */
     [data-testid="stMetric"] {{
-        background: {SURFACE} !important;
-        border: 1px solid {BORDER} !important;
-        border-radius: 14px !important;
-        padding: 1rem 1.1rem !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }}
-    [data-testid="stMetricLabel"] {{
-        color: {MUTED} !important;
-        font-weight: 500 !important;
-        font-size: 0.82rem !important;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }}
-    [data-testid="stMetricValue"] {{
-        color: {TEXT} !important;
-        font-weight: 700 !important;
-    }}
-
-    /* ---------- Custom performance cards ---------- */
-    .perf-grid {{
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }}
-    .perf-card {{
-        background: {SURFACE};
+        background: {INPUT};
         border: 1px solid {BORDER};
-        border-radius: 14px;
-        padding: 18px 20px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        transition: border-color 0.2s ease, transform 0.2s ease;
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
     }}
-    .perf-card:hover {{
-        border-color: {BORDER_SOFT};
-        transform: translateY(-1px);
+    [data-testid="stMetricLabel"] * {{ color: {MUTED} !important; font-weight: 600 !important; }}
+    [data-testid="stMetricValue"] * {{ color: {TEXT} !important; font-weight: 800 !important; }}
+    [data-testid="stProgress"] > div > div {{ background: {BORDER} !important; border-radius: 999px; }}
+    [data-testid="stProgress"] > div > div > div {{
+        background: linear-gradient(90deg, {PRIMARY}, {ACCENT}) !important; border-radius: 999px;
     }}
-    .perf-label {{
-        color: {MUTED};
-        font-size: 0.72rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-    }}
-    .perf-value {{
-        color: {TEXT};
-        font-size: 1.45rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.2;
-        white-space: nowrap;
-    }}
+    [data-testid="stAlert"] {{ border-radius: 12px !important; border: 1px solid {BORDER} !important; }}
+    hr {{ border-color: {BORDER} !important; opacity: .7; }}
 
-    /* ---------- Progress bar ---------- */
-    [data-testid="stProgress"] > div > div {{
-        background: linear-gradient(90deg, {PRIMARY}, {ACCENT}) !important;
-        border-radius: 999px !important;
-    }}
-    [data-testid="stProgress"] > div {{
-        background: {BORDER} !important;
-        border-radius: 999px !important;
-        height: 8px !important;
-    }}
-
-    /* ---------- Alerts ---------- */
-    [data-testid="stAlert"] {{
-        border-radius: 12px !important;
-        border: 1px solid {BORDER} !important;
-    }}
-
-    hr {{ border-color: {BORDER} !important; opacity: 0.6; }}
-
-    /* ---------- Hero ---------- */
-    .hero-badge {{
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 999px;
-        background: {GLOW};
-        color: {ACCENT};
-        font-size: 0.72rem;
-        font-weight: 600;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        border: 1px solid {BORDER};
-        margin-bottom: 1rem;
-    }}
+    /* ---------- Hero + sections ---------- */
     .hero-title {{
-        font-size: 2.6rem !important;
-        line-height: 1.1 !important;
-        font-weight: 800 !important;
-        margin: 0 0 0.6rem 0 !important;
-        background: linear-gradient(135deg, {TEXT} 40%, {ACCENT});
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-size: 2.5rem; line-height: 1.12; font-weight: 800;
+        letter-spacing: -0.03em; color: {TEXT}; margin: 0 0 .6rem 0;
     }}
-    .hero-sub {{
-        color: {MUTED} !important;
-        font-size: 1.02rem;
-        line-height: 1.6;
-        max-width: 640px;
+    .hero-title em {{ font-style: normal; color: {PRIMARY}; }}
+    .hero-sub {{ color: {MUTED} !important; font-size: 1rem; line-height: 1.65; max-width: 620px; margin: 0; }}
+    .section-title {{
+        display: flex; align-items: center; gap: 10px;
+        font-size: 1.05rem; font-weight: 700; color: {TEXT}; margin: .2rem 0 .1rem 0;
+    }}
+    .section-title::before {{
+        content: ""; width: 4px; height: 18px; border-radius: 2px; background: {PRIMARY};
     }}
 
-    .section-label {{
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: {MUTED};
-        margin: 0.4rem 0 0.2rem 0;
+    /* ---------- Performance cards ---------- */
+    .perf-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }}
+    .perf-card {{
+        background: {SURFACE}; border: 1px solid {BORDER};
+        border-radius: 14px; padding: 18px 20px;
     }}
-    .section-label::before {{
-        content: "";
-        width: 22px;
-        height: 2px;
-        background: {PRIMARY};
-        border-radius: 2px;
-    }}
-
-    .field-hint {{
-        color: {MUTED};
-        font-size: 0.78rem;
-        margin-top: -0.5rem;
-        margin-bottom: 0.6rem;
-    }}
+    .perf-label {{ color: {MUTED}; font-size: .82rem; font-weight: 600; margin-bottom: 6px; }}
+    .perf-value {{ color: {TEXT}; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }}
 
     @media (max-width: 768px) {{
-        .block-container {{ padding-left: 1rem; padding-right: 1rem; }}
-        .hero-title {{ font-size: 2rem !important; }}
-        .perf-grid {{ grid-template-columns: 1fr !important; }}
+        .hero-title {{ font-size: 1.9rem; }}
+        .perf-grid {{ grid-template-columns: 1fr; }}
     }}
     </style>
     """,
@@ -442,16 +289,14 @@ top_left, top_right = st.columns([7, 2], vertical_alignment="center")
 with top_left:
     st.markdown(
         f"""
-        <div style="display:flex;align-items:center;gap:12px;padding:4px 0;">
-            <div style="
-                width:40px;height:40px;border-radius:12px;
-                background:linear-gradient(135deg,{PRIMARY},{ACCENT});
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;border-radius:12px;
+                background:linear-gradient(135deg,{PRIMARY},{PRIMARY_D});
                 display:flex;align-items:center;justify-content:center;
-                font-size:20px;box-shadow:0 8px 20px -8px {PRIMARY};
-            ">❤️</div>
+                font-size:20px;box-shadow:0 8px 20px -8px {PRIMARY};">❤️</div>
             <div>
-                <div style="font-weight:700;font-size:1.05rem;color:{TEXT};line-height:1.1;">CardioPredict</div>
-                <div style="color:{MUTED};font-size:0.78rem;">Machine learning · Cardiovascular risk</div>
+                <div style="font-weight:800;font-size:1.1rem;color:{TEXT};line-height:1.1;">CardioPredict</div>
+                <div style="color:{MUTED};font-size:.8rem;">Cardiovascular risk estimation</div>
             </div>
         </div>
         """,
@@ -459,10 +304,7 @@ with top_left:
     )
 
 with top_right:
-    if st.button(
-        "☀️  Light mode" if dark else "🌙  Dark mode",
-        use_container_width=True,
-    ):
+    if st.button("☀️  Light mode" if dark else "🌙  Dark mode", use_container_width=True):
         st.session_state.dark_mode = not dark
         st.rerun()
 
@@ -471,13 +313,12 @@ st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 # ---------- Hero ----------
 with st.container(border=True):
     st.markdown(
-        f"""
-        <div style="padding:8px 4px 4px 4px;">
-            <div class="hero-badge">Machine Learning · Cardiovascular Risk</div>
-            <div class="hero-title">Heart disease prediction,<br/>powered by machine learning.</div>
+        """
+        <div style="padding:12px 8px 8px 8px;">
+            <div class="hero-title">Heart disease prediction,<br/>powered by <em>machine learning</em>.</div>
             <p class="hero-sub">
-                CardioPredict analyzes clinical parameters using a trained
-                Gradient Boosting model to estimate the probability of heart disease.
+                Enter a patient's clinical measurements and a trained Gradient Boosting
+                model will estimate the probability of heart disease.
             </p>
         </div>
         """,
@@ -486,10 +327,9 @@ with st.container(border=True):
 
 st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 
-# ---------- Form header ----------
-st.markdown('<div class="section-label">Patient information</div>', unsafe_allow_html=True)
+# ---------- Form ----------
+st.markdown('<div class="section-title">Patient information</div>', unsafe_allow_html=True)
 st.caption("Enter the available clinical measurements below.")
-
 st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
 left, right = st.columns(2, gap="large")
@@ -497,8 +337,6 @@ left, right = st.columns(2, gap="large")
 with left:
     with st.container(border=True):
         st.markdown("#### Basic information")
-        st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
-
         age = st.number_input("Age", 1, 100, 50, 1)
         sex = st.selectbox("Sex", ["Male", "Female"])
         cp = st.selectbox(
@@ -513,32 +351,23 @@ with left:
             format_func=lambda x: "Yes" if x else "No",
         )
         restecg = st.selectbox(
-            "Resting ECG",
-            ["normal", "lv hypertrophy", "st-t abnormality"],
+            "Resting ECG", ["normal", "lv hypertrophy", "st-t abnormality"]
         )
 
 with right:
     with st.container(border=True):
         st.markdown("#### Cardiac measurements")
-        st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
-
         thalch = st.number_input("Maximum heart rate achieved", 50, 250, 150, 1)
         exang = st.selectbox(
             "Exercise-induced angina",
             [False, True],
             format_func=lambda x: "Yes" if x else "No",
         )
-        oldpeak = st.number_input(
-            "ST depression (Oldpeak)", -5.0, 10.0, 1.0, 0.1
-        )
-        slope = st.selectbox(
-            "ST segment slope",
-            ["upsloping", "flat", "downsloping"],
-        )
+        oldpeak = st.number_input("ST depression (Oldpeak)", -5.0, 10.0, 1.0, 0.1)
+        slope = st.selectbox("ST segment slope", ["upsloping", "flat", "downsloping"])
         ca = st.number_input("Number of major vessels (0–3)", 0.0, 3.0, 0.0, 1.0)
         thal = st.selectbox(
-            "Thalassemia",
-            ["normal", "fixed defect", "reversable defect"],
+            "Thalassemia", ["normal", "fixed defect", "reversable defect"]
         )
 
 st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
@@ -546,19 +375,9 @@ st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 # ---------- Predict ----------
 if st.button("🔍  Predict heart disease", type="primary", use_container_width=True):
     patient = pd.DataFrame([{
-        "age": age,
-        "sex": sex,
-        "cp": cp,
-        "trestbps": trestbps,
-        "chol": chol,
-        "fbs": fbs,
-        "restecg": restecg,
-        "thalch": thalch,
-        "exang": exang,
-        "oldpeak": oldpeak,
-        "slope": slope,
-        "ca": ca,
-        "thal": thal,
+        "age": age, "sex": sex, "cp": cp, "trestbps": trestbps, "chol": chol,
+        "fbs": fbs, "restecg": restecg, "thalch": thalch, "exang": exang,
+        "oldpeak": oldpeak, "slope": slope, "ca": ca, "thal": thal,
     }])
 
     prediction = model.predict(patient)[0]
@@ -567,7 +386,7 @@ if st.button("🔍  Predict heart disease", type="primary", use_container_width=
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
     with st.container(border=True):
-        st.markdown('<div class="section-label">Prediction result</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Prediction result</div>', unsafe_allow_html=True)
         st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
         if prediction == 1:
@@ -581,38 +400,23 @@ if st.button("🔍  Predict heart disease", type="primary", use_container_width=
         with r1:
             st.metric("Estimated probability", f"{probability:.1%}")
         with r2:
-            st.progress(
-                float(probability),
-                text=f"Model probability: {probability:.1%}",
-            )
+            st.progress(float(probability), text=f"Model probability: {probability:.1%}")
 
-    st.caption(
-        "⚠️ This is an educational machine-learning prediction, not a medical diagnosis."
-    )
+    st.caption("⚠️ This is an educational machine-learning prediction, not a medical diagnosis.")
 
 st.markdown("<div style='height:36px'></div>", unsafe_allow_html=True)
 
 # ---------- Model performance ----------
-st.markdown('<div class="section-label">Model performance</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">Model performance</div>', unsafe_allow_html=True)
 st.caption("Measured on the held-out test dataset.")
-
 st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
 st.markdown(
-    f"""
+    """
     <div class="perf-grid">
-        <div class="perf-card">
-            <div class="perf-label">Model</div>
-            <div class="perf-value">Gradient Boosting</div>
-        </div>
-        <div class="perf-card">
-            <div class="perf-label">Test accuracy</div>
-            <div class="perf-value">82.61%</div>
-        </div>
-        <div class="perf-card">
-            <div class="perf-label">ROC-AUC</div>
-            <div class="perf-value">0.909</div>
-        </div>
+        <div class="perf-card"><div class="perf-label">Model</div><div class="perf-value">Gradient Boosting</div></div>
+        <div class="perf-card"><div class="perf-label">Test accuracy</div><div class="perf-value">82.61%</div></div>
+        <div class="perf-card"><div class="perf-label">ROC-AUC</div><div class="perf-value">0.909</div></div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -630,7 +434,4 @@ with st.container(border=True):
 
 st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
 st.divider()
-st.caption(
-    "CardioPredict · Educational machine learning project · "
-    "Not a medical diagnostic system."
-)
+st.caption("CardioPredict is an educational machine learning project, not a medical diagnostic system.")
