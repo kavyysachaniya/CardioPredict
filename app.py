@@ -1,6 +1,13 @@
 import streamlit as st
 import pandas as pd
-import pickle
+import numpy as np
+
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 st.set_page_config(
     page_title="CardioPredict",
@@ -11,15 +18,53 @@ st.set_page_config(
 
 @st.cache_resource
 def load_model():
-    with open("heart_disease_model.pkl", "rb") as f:
-        return pickle.load(f)
+    df = pd.read_csv("heart_disease_uci.csv")
+    df["target"] = (df["num"] > 0).astype(int)
+
+    data = df.drop(columns=["id", "num", "dataset"]).copy()
+    data["trestbps"] = data["trestbps"].replace(0, np.nan)
+    data["chol"] = data["chol"].replace(0, np.nan)
+
+    X = data.drop(columns=["target"])
+    y = data["target"]
+
+    X_train, _, y_train, _ = train_test_split(
+        X, y, test_size=0.20, random_state=42, stratify=y
+    )
+
+    numerical_features = ["age", "trestbps", "chol", "thalch", "oldpeak", "ca"]
+    categorical_features = ["sex", "cp", "fbs", "restecg", "exang", "slope", "thal"]
+
+    numerical_transformer = Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", StandardScaler()),
+    ])
+
+    categorical_transformer = Pipeline([
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("onehot", OneHotEncoder(handle_unknown="ignore")),
+    ])
+
+    preprocessor = ColumnTransformer([
+        ("num", numerical_transformer, numerical_features),
+        ("cat", categorical_transformer, categorical_features),
+    ])
+
+    model = Pipeline([
+        ("preprocessor", preprocessor),
+        ("model", GradientBoostingClassifier(
+            n_estimators=150,
+            learning_rate=0.05,
+            max_depth=2,
+            min_samples_split=5,
+            random_state=42,
+        )),
+    ])
+
+    model.fit(X_train, y_train)
+    return model
 
 model = load_model()
-
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = True
-
-dark = st.session_state.dark_mode
 
 # ---------- Theme tokens ----------
 if dark:
