@@ -152,8 +152,8 @@ st.markdown(
     /* Keep selects and number inputs visually identical */
     div[data-baseweb="select"] > div,
     div[data-testid="stNumberInput"] > div {
-        background: ${INPUT} !important;
-        border: 1px solid ${BORDER} !important;
+        background: {INPUT} !important;
+        border: 1px solid {BORDER} !important;
         border-radius: 10px !important;
         min-height: 40px !important;
         box-shadow: none !important;
