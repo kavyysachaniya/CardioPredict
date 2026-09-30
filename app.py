@@ -172,6 +172,26 @@ st.markdown(
         border-color: {PRIMARY} !important;
         box-shadow: 0 0 0 3px {GLOW} !important;
     }}
+    div[data-baseweb="select"] > div[aria-expanded="true"] {{
+        border-color: {PRIMARY} !important;
+        box-shadow: 0 0 0 2px {GLOW} !important;
+    }}
+    div[data-baseweb="select"] [data-baseweb="popover"] {{
+        border-color: {BORDER} !important;
+    }}
+    div[data-baseweb="menu"] {{
+        background: {SURFACE} !important;
+        border: 1px solid {BORDER} !important;
+    }}
+    div[data-baseweb="menu"] li {{
+        color: {TEXT} !important;
+        background: {SURFACE} !important;
+    }}
+    div[data-baseweb="menu"] li:hover,
+    div[data-baseweb="menu"] li[aria-selected="true"] {{
+        background: {SURFACE_2} !important;
+        color: {ACCENT} !important;
+    }}
     div[data-baseweb="select"] span {{ color: {TEXT} !important; }}
     div[data-baseweb="select"] svg {{ fill: {MUTED} !important; }}
 
