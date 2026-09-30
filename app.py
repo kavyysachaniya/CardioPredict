@@ -149,6 +149,16 @@ st.markdown(
     }}
 
     /* ---------- Inputs ---------- */
+    /* Keep selects and number inputs visually identical */
+    div[data-baseweb="select"] > div,
+    div[data-testid="stNumberInput"] > div {
+        background: ${INPUT} !important;
+        border: 1px solid ${BORDER} !important;
+        border-radius: 10px !important;
+        min-height: 40px !important;
+        box-shadow: none !important;
+    }
+
     div[data-baseweb="select"] > div {{
         background: {INPUT} !important;
         border: 1px solid {BORDER} !important;
@@ -165,24 +175,30 @@ st.markdown(
     div[data-baseweb="select"] span {{ color: {TEXT} !important; }}
     div[data-baseweb="select"] svg {{ fill: {MUTED} !important; }}
 
+    div[data-testid="stNumberInput"] {{
+        margin-top: 0 !important;
+    }}
     div[data-testid="stNumberInput"] input {{
         background: {INPUT} !important;
         color: {TEXT} !important;
-        border: 1px solid {BORDER} !important;
-        border-radius: 10px !important;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        border: 0 !important;
+        border-radius: 10px 0 0 10px !important;
+        height: 38px !important;
+        box-shadow: none !important;
     }}
-    div[data-testid="stNumberInput"] input:focus {{
+    div[data-testid="stNumberInput"] > div:focus-within {{
         border-color: {PRIMARY} !important;
         box-shadow: 0 0 0 3px {GLOW} !important;
     }}
     div[data-testid="stNumberInput"] button {{
-        background: {SURFACE_2} !important;
-        color: {TEXT} !important;
-        border: 1px solid {BORDER} !important;
+        background: {INPUT} !important;
+        color: {MUTED} !important;
+        border: 0 !important;
+        border-left: 1px solid {BORDER} !important;
+        min-height: 38px !important;
     }}
     div[data-testid="stNumberInput"] button:hover {{
-        background: {BORDER} !important;
+        background: {SURFACE_2} !important;
         color: {PRIMARY} !important;
     }}
 
