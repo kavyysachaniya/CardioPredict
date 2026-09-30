@@ -168,6 +168,14 @@ st.markdown(
     div[data-baseweb="select"] > div:hover {{
         border-color: {ACCENT} !important;
     }}
+    div[data-baseweb="select"] > div:focus,
+    div[data-baseweb="select"] > div:focus-within,
+    div[data-baseweb="select"] > div[aria-invalid="true"],
+    div[data-baseweb="select"] > div[aria-expanded="true"] {{
+        border-color: {PRIMARY} !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px {GLOW} !important;
+    }}
     div[data-baseweb="select"] > div:focus-within {{
         border-color: {PRIMARY} !important;
         box-shadow: 0 0 0 3px {GLOW} !important;
@@ -220,6 +228,27 @@ st.markdown(
     div[data-testid="stNumberInput"] button:hover {{
         background: {SURFACE_2} !important;
         color: {PRIMARY} !important;
+    }}
+
+    /* ---------- Final form-control normalization ---------- */
+    div[data-baseweb="select"] > div,
+    div[data-testid="stNumberInput"] > div {{
+        color: {TEXT} !important;
+        background: {INPUT} !important;
+        border-color: {BORDER} !important;
+    }}
+
+    div[data-baseweb="select"] > div[aria-invalid="true"],
+    div[data-baseweb="select"] > div[aria-expanded="true"],
+    div[data-testid="stNumberInput"] > div:focus-within {{
+        border-color: {PRIMARY} !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px {GLOW} !important;
+    }}
+
+    div[data-testid="stNumberInput"] input:focus {{
+        outline: none !important;
+        box-shadow: none !important;
     }}
 
     /* ---------- Buttons ---------- */
