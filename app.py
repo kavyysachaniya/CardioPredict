@@ -275,7 +275,7 @@ st.markdown(
     .perf-value {{ color: {TEXT}; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }}
 
     @media (max-width: 768px) {{
-        .hero-title {{ font-size: 1.9rem; }}
+        .hero-title {{ font-size: 2.05rem; }}
         .perf-grid {{ grid-template-columns: 1fr; }}
     }}
     </style>
@@ -308,7 +308,7 @@ with top_right:
         st.session_state.dark_mode = not dark
         st.rerun()
 
-st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 
 # ---------- Hero ----------
 with st.container(border=True):
