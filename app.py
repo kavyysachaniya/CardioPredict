@@ -297,7 +297,7 @@ with top_left:
                 display:flex;align-items:center;justify-content:center;
                 font-size:20px;box-shadow:0 8px 20px -8px {PRIMARY};">❤️</div>
             <div>
-                <div style="font-weight:800;font-size:1.1rem;color:{TEXT};line-height:1.1;">CardioPredict</div>
+                <div style="font-weight:800;font-size:2.2rem;color:{TEXT};line-height:1.1;">CardioPredict</div>
                 <div style="color:{MUTED};font-size:.8rem;">Cardiovascular risk estimation</div>
             </div>
         </div>
