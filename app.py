@@ -257,6 +257,7 @@ st.markdown(
     }}
     .hero-title em {{ font-style: normal; color: {PRIMARY}; }}
     .hero-sub {{ color: {MUTED} !important; font-size: 1rem; line-height: 1.65; max-width: 620px; margin: 0; }}
+    .mobile-top-gap {{ display: none; }}
     .section-title {{
         display: flex; align-items: center; gap: 10px;
         font-size: 1.05rem; font-weight: 700; color: {TEXT}; margin: .2rem 0 .1rem 0;
@@ -277,6 +278,7 @@ st.markdown(
     @media (max-width: 768px) {{
         .hero-title {{ font-size: 2.05rem; }}
         .perf-grid {{ grid-template-columns: 1fr; }}
+        .mobile-top-gap {{ display: block; height: 20px; }}
     }}
     </style>
     """,
@@ -304,6 +306,7 @@ with top_left:
     )
 
 with top_right:
+    st.markdown("<div class='mobile-top-gap'></div>", unsafe_allow_html=True)
     if st.button("☀️  Light mode" if dark else "🌙  Dark mode", use_container_width=True):
         st.session_state.dark_mode = not dark
         st.rerun()
