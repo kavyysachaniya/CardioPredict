@@ -2,6 +2,8 @@
 
 ### Heart Disease Prediction using Machine Learning
 
+🔗 **Live Preview:** https://cardiopredict-kavyysachaniya.streamlit.app/
+
 CardioPredict is an end-to-end machine learning project that predicts the presence of heart disease from clinical parameters.
 
 The project uses a **Gradient Boosting Classifier** trained with a leakage-safe preprocessing pipeline and provides an interactive **Streamlit web application** for making predictions.
